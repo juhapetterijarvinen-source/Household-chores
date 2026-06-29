@@ -5,31 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Family Chore Tracker</title>
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-image: url('background.png'); 
             
-            /* Keeps the background image completely static while scrolling */
-            background-attachment: fixed;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            /* Background image settings forced to stay static */
+            background-image: url('background.jpeg') !important; 
+            background-attachment: fixed !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
             
-            margin: 0;
+            /* Layout structural rules for perfect centering */
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            min-height: 100vh !important;
             padding: 20px;
-            
-            /* Perfectly centers the container horizontally and vertically */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            
-            /* Ensures the body takes up at least 100% of the screen height to allow vertical centering */
-            min-height: 100vh;
             box-sizing: border-box;
         }
 
         .container {
-            background-color: rgba(255, 255, 255, 0.40); 
+            background-color: rgba(255, 255, 255, 0.55); 
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
             
@@ -39,8 +41,8 @@
             width: 100%;
             max-width: 550px;
             
-            /* Ensures proper spacing if the page content gets longer than the screen height */
-            margin: 20px 0; 
+            /* Ensures it stays clean if the screen is tiny */
+            margin: auto !important; 
         }
         h2 { text-align: center; color: #1a202c; margin-top: 0; }
         .form-group { margin-bottom: 15px; }

@@ -25,7 +25,7 @@
         }
         .container {
             /* This makes the white box 85% opaque, letting the background show through */
-            background-color: rgba(255, 255, 255, 0.75); 
+            background-color: rgba(255, 255, 255, 0.60); 
             
             /* This adds a slight blur effect to the background behind the card for a premium look */
             backdrop-filter: blur(5px);
@@ -65,9 +65,29 @@
         /* Progress Bar Styles */
         .member-score-card { margin-bottom: 20px; }
         .member-info { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 4px; }
-        .progress-bar-bg { background-color: #edf2f7; border-radius: 8px; height: 24px; width: 100%; overflow: hidden; position: relative;}
-        .progress-bar-fill { height: 100%; background-color: #48bb78; width: 0%; transition: width 0.5s ease-in-out; }
-        .goal-reached { background-color: #38a169; }
+        .progress-bar-bg { 
+    /* This makes the unfilled part of the bar a translucent white */
+    background-color: rgba(255, 255, 255, 0.4); 
+    
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Adds a subtle border so you can see the bar's shape */
+    border-radius: 8px; 
+    height: 24px; 
+    width: 100%; 
+    overflow: hidden; 
+    position: relative;
+}
+        .progress-bar-fill { 
+    height: 100%; 
+    /* Semi-transparent standard green */
+    background-color: rgba(72, 187, 120, 0.8); 
+    width: 0%; 
+    transition: width 0.5s ease-in-out; 
+}
+
+.goal-reached { 
+    /* Semi-transparent darker green when they hit 9 points */
+    background-color: rgba(56, 161, 105, 0.85); 
+}
         
         hr { margin: 25px 0; border: 0; border-top: 2px solid #e2e8f0; }
         .log-list { list-style: none; padding: 0; max-height: 200px; overflow-y: auto; }

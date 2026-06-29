@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Chore Tracker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 550px;
+        }
+        h2 { text-align: center; color: #1a202c; margin-top: 0; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #4a5568; }
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: #fff;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #2b6cb0; }
+        
+        /* Progress Bar Styles */
+        .member-score-card { margin-bottom: 20px; }
+        .member-info { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 4px; }
+        .progress-bar-bg { background-color: #edf2f7; border-radius: 8px; height: 24px; width: 100%; overflow: hidden; position: relative;}
+        .progress-bar-fill { height: 100%; background-color: #48bb78; width: 0%; transition: width 0.5s ease-in-out; }
+        .goal-reached { background-color: #38a169; }
+        
+        hr { margin: 25px 0; border: 0; border-top: 2px solid #e2e8f0; }
+        .log-list { list-style: none; padding: 0; max-height: 200px; overflow-y: auto; }
+        .log-item { padding: 8px; border-bottom: 1px solid #edf2f7; font-size: 14px; color: #4a5568; display: flex; justify-content: space-between;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🏆 Weekly Chore Challenge</h2>
+    
+    <div id="members-container">
+        <div class="member-score-card">
+            <div class="member-info"><span>Juha</span><span id="score-Juha">0 / 9 pts</span></div>
+            <div class="progress-bar-bg"><div id="bar-Juha" class="progress-bar-fill"></div></div>
+        </div>
+        <div class="member-score-card">
+            <div class="member-info"><span>Heini</span><span id="score-Heini">0 / 9 pts</span></div>
+            <div class="progress-bar-bg"><div id="bar-Heini" class="progress-bar-fill"></div></div>
+        </div>
+        <div class="member-score-card">
+            <div class="member-info"><span>Ronja</span><span id="score-Ronja">0 / 9 pts</span></div>
+            <div class="progress-bar-bg"><div id="bar-Ronja" class="progress-bar-fill"></div></div>
+        </div>
+        <div class="member-score-card">
+            <div class="member-info"><span>Valtteri</span><span id="score-Valtteri">0 / 9 pts</span></div>
+            <div class="progress-bar-bg"><div id="bar-Valtteri" class="progress-bar-fill"></div></div>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="form-group">
+        <label for="memberSelect">Who did the work?</label>
+        <select id="memberSelect">
+            <option value="Juha">Juha</option>
+            <option value="Heini">Heini</option>
+            <option value="Ronja">Ronja</option>
+            <option value="Valtteri">Valtteri</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="taskSelect">Select Task completed:</label>
+        <select id="taskSelect">
+            <option value="dog" data-points="1">Dog Walking (1 pt)</option>
+            <option value="dishwasher" data-points="1">Dishwasher: Loading/Unloading (1 pt)</option>
+            <option value="laundry" data-points="2">Laundry: Wash & Dry set (2 pts)</option>
+            <option value="vacuum_down" data-points="2">Vacuuming Downstairs (2 pts)</option>
+            <option value="vacuum_up" data-points="2">Vacuuming Upstairs (2 pts)</option>
+            <option value="toilet_down" data-points="2">Cleaning Downstairs Toilet (2 pts)</option>
+            <option value="toilet_up" data-points="2">Cleaning Upstairs Toilet (2 pts)</option>
+        </select>
+    </div>
+
+    <button onclick="submitChore()">Record Task & Add Points</button>
+
+    <hr>
+    <h3>Activity Log (This Week)</h3>
+    <ul id="activityLog" class="log-list"></ul>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, onSnapshot, collection, addDoc, query, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // 🔴 PASTE YOUR FIREBASE CONFIG HERE
+    const firebaseConfig = {
+        apiKey: "AIzaSyA2mEZqTmf3Ai8len8w3iiHDN941r7OOF4",
+        authDomain: "household-chores-c022b.firebaseapp.com",
+        projectId: "household-chores-c022b",
+        storageBucket: "household-chores-c022b.firebasestorage.app",
+        messagingSenderId: "632653920335",
+        appId: "1:632653920335:web:62296b2c121330144a523a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const members = ["Juha", "Heini", "Ronja", "Valtteri"];
+    const targetGoal = 9;
+
+    // Helper to get the timestamp of the most recent Monday at 00:00:00
+    function getStartOfWeek() {
+        const d = new Date();
+        const day = d.getDay();
+        const diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+        const monday = new Date(d.setDate(diff));
+        monday.setHours(0,0,0,0);
+        return monday.getTime();
+    }
+
+    // Listens to database in real-time
+    function initTracker() {
+        const startOfWeek = getStartOfWeek();
+        
+        // Listen to logs from this week
+        const q = query(collection(db, "chore_logs"), where("timestamp", ">=", startOfWeek));
+        
+        onSnapshot(q, (snapshot) => {
+            // Reset local scores
+            let scores = { Juha: 0, Heini: 0, Ronja: 0, Valtteri: 0 };
+            const logList = document.getElementById("activityLog");
+            logList.innerHTML = "";
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                scores[data.member] += data.points;
+
+                // Add to visible log
+                const li = document.createElement("li");
+                li.className = "log-item";
+                li.innerHTML = `<span><strong>${data.member}</strong> completed ${data.taskName}</span> <span>+${data.points} pts</span>`;
+                logList.appendChild(li);
+            });
+
+            // Update UI Bars
+            members.forEach(member => {
+                const currentScore = scores[member];
+                document.getElementById(`score-${member}`).innerText = `${currentScore} / ${targetGoal} pts`;
+                
+                // Calculate percentage for visual bar (cap it at 100%)
+                const percentage = Math.min((currentScore / targetGoal) * 100, 100);
+                const bar = document.getElementById(`bar-${member}`);
+                bar.style.width = `${percentage}%`;
+                
+                if(currentScore >= targetGoal) {
+                    bar.classList.add("goal-reached");
+                } else {
+                    bar.classList.remove("goal-reached");
+                }
+            });
+        });
+    }
+
+    // Submit data to Cloud
+    window.submitChore = async function() {
+        const memberSelect = document.getElementById("memberSelect");
+        const taskSelect = document.getElementById("taskSelect");
+        
+        const chosenMember = memberSelect.value;
+        const chosenTaskText = taskSelect.options[taskSelect.selectedIndex].text.split(" (")[0];
+        const pointsAwarded = parseInt(taskSelect.options[taskSelect.selectedIndex].getAttribute("data-points"));
+
+        try {
+            await addDoc(collection(db, "chore_logs"), {
+                member: chosenMember,
+                taskName: chosenTaskText,
+                points: pointsAwarded,
+                timestamp: Date.now()
+            });
+        } catch (e) {
+            alert("Error updating tracker: " + e);
+        }
+    }
+
+    // Run setup on load
+    initTracker();
+</script>
+</body>
+</html>

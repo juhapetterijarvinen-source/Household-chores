@@ -8,19 +8,15 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            
-            /* Pushes the container down so its top starts near the middle of the screen */
-            padding-top: 50vh; 
-            padding-bottom: 50px; /* Gives some breathing room at the bottom of the page */
-            padding-left: 20px;
-            padding-right: 20px;
+            padding: 0;
             box-sizing: border-box;
             
-            /* Allows natural page scrolling */
+            /* Allows the page to scroll naturally */
             overflow-y: auto; 
+            min-height: 100vh;
         }
 
-        /* Keep the iPhone Safari background fix intact */
+        /* Keeps the iPhone Safari background fix intact */
         body::before {
             content: "";
             position: fixed;
@@ -49,11 +45,15 @@
             max-width: 550px;
             box-sizing: border-box;
             
-            /* Centering Horizontally */
-            margin: 0 auto !important; 
+            /* Centers it horizontally */
+            margin: 0 auto; 
             
-            /* This shift ensures the absolute center of the container aligns with the center of the screen on load */
-            transform: translateY(-50%); 
+            /* Pushes the container down to start lower on the screen */
+            position: relative;
+            top: 25vh; 
+            
+            /* Leaves room at the bottom so it doesn't hug the edge when scrolled */
+            margin-bottom: 35vh; 
         }
         h2 { text-align: center; color: #1a202c; margin-top: 0; }
         .form-group { margin-bottom: 15px; }

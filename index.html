@@ -216,10 +216,19 @@
                 const data = doc.data();
                 scores[data.member] += data.points;
 
-                // Add to visible log
+                // 🛠️ Convert the raw timestamp into a readable local time format (HH:MM)
+                const choreTime = new Date(data.timestamp).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                // Add to visible log with the timestamp included
                 const li = document.createElement("li");
                 li.className = "log-item";
-                li.innerHTML = `<span><strong>${data.member}</strong> completed ${data.taskName}</span> <span>+${data.points} pts</span>`;
+                li.innerHTML = `
+                    <span>[${choreTime}] <strong>${data.member}</strong> completed ${data.taskName}</span> 
+                    <span>+${data.points} pts</span>
+                `;
                 logList.appendChild(li);
             });
 

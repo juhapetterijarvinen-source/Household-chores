@@ -216,13 +216,14 @@
                 const data = doc.data();
                 scores[data.member] += data.points;
 
-                // 🛠️ Convert the raw timestamp into a readable local time format (HH:MM)
-                const choreTime = new Date(data.timestamp).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit'
+            // 🛠️ Force English format ('en-GB' keeps the 24-hour clock style)
+            const choreTime = new Date(data.timestamp).toLocaleTimeString('en-GB', {
+                weekday: 'short', // Forces Mon, Tue, Wed...
+                hour: '2-digit',
+                minute: '2-digit'
                 });
 
-                // Add to visible log with the timestamp included
+                // Add to visible log with the new format
                 const li = document.createElement("li");
                 li.className = "log-item";
                 li.innerHTML = `
